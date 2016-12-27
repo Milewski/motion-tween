@@ -1,0 +1,7 @@
+node_modules
+distribution
+.idea
+
+source/**/*.js
+test/**/*.js
+*.map

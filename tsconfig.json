@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "sourceMap": true,
+    "types": [
+      "three", "node", "mocha"
+    ]
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
