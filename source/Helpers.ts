@@ -39,3 +39,29 @@ export const extend = (defaults: any, ...object: any[]): any => {
     return defaults;
 
 };
+
+export const cloneBasedOnTarget = (origin: {}, target: {} = origin) => {
+
+    /**
+     * If origin is a number
+     * then nothing to extend here
+     */
+    if (typeof origin === 'number') return origin;
+
+    let clone = {};
+
+    for (let property in target) {
+
+        let object = target[property];
+
+        if (typeof object === 'object') {
+            clone[property] = cloneBasedOnTarget(origin[property], object)
+        } else if (typeof object === 'number') {
+            clone[property] = origin[property]
+        }
+
+    }
+
+    return clone
+
+}

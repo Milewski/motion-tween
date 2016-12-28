@@ -36,27 +36,15 @@ export class Ease {
     static SINEOUT = 'sineOut';
     static SINEINOUT = 'sineInOut';
 
-    private backIn(time, begin, change, duration, overshoot) {
-
-        if (overshoot == null)
-            overshoot = Ease.OVERSHOOT;
-
+    private backIn(time, begin, change, duration, overshoot = Ease.OVERSHOOT) {
         return change * (time /= duration) * time * ((overshoot + 1) * time - overshoot) + begin;
     }
 
-    private backOut(time, begin, change, duration, overshoot) {
-
-        if (overshoot == null)
-            overshoot = Ease.OVERSHOOT;
-
+    private backOut(time, begin, change, duration, overshoot = Ease.OVERSHOOT) {
         return change * ((time = time / duration - 1) * time * ((overshoot + 1) * time + overshoot) + 1) + begin;
-
     }
 
-    private backInOut(time, begin, change, duration, overshoot) {
-
-        if (overshoot == null)
-            overshoot = Ease.OVERSHOOT;
+    private backInOut(time, begin, change, duration, overshoot = Ease.OVERSHOOT) {
 
         if ((time = time / (duration / 2)) < 1) {
             return change / 2 * (time * time * (((overshoot *= 1.525) + 1) * time - overshoot)) + begin;

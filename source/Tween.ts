@@ -1,32 +1,45 @@
 import { TweenInterface, PropertyCompletion } from "./Interfaces/TweenInterface";
 import { Ease } from "./Ease";
-import { Clock } from "./Clock";
-import { dot, extend } from "./Helpers";
+import { dot, extend, cloneBasedOnTarget } from "./Helpers";
+import { Looper } from "./Looper";
+import clone = THREE.UniformsUtils.clone;
 
 export class Tween {
 
     static easings = Ease;
-
     private pool = [];
     private ease = new Ease();
+    private loop: Looper;
 
     get defaults() {
         return {
             ignore: [],
             duration: 1,
             ease: Tween.easings.EXPOIN,
-            cache: {
-                clock: new Clock()
+            cache: {},
+            update(){
             },
             complete(){
             }
         }
     }
 
+    constructor(public autoStart: boolean = true,
+                public loopEngine: any = Looper,
+                public frameRate: number = 60) {
+
+        if (autoStart)
+            this.loop = new loopEngine(frameRate, ({ time, delta }) => {
+                this.update(time, delta)
+            });
+
+    }
+
     public create(options: TweenInterface) {
 
         options = extend(this.defaults, options);
 
+        // options.duration *=  1000;
         if (typeof options.origin !== typeof options.target) {
             // throw new TypeError('Origin and Target must to be the same type of object');
             // console.log(options)
@@ -45,11 +58,14 @@ export class Tween {
             .getOwnPropertyNames(options.target instanceof Object ? options.target : options.origin)
             .filter(item => options['ignore'].indexOf(item) === -1)
 
+        options.cache.origin = cloneBasedOnTarget(
+            options.origin, (options.target instanceof Object) ? options.target : options.origin
+        )
+
         this.pool.push(options)
 
-        for (let property in options.origin) {
-            // console.log(property)
-        }
+        if (this.autoStart)
+            this.start();
 
         return new Promise(function (accept) {
             options.cache.promise = accept
@@ -57,16 +73,21 @@ export class Tween {
 
     }
 
-    private interpolate(item, time: number) {
+    private interpolate(item, elapsed: number) {
 
         let { cache, duration, target, origin, ease, transform, ignore } = item,
-            elapsed = cache.clock.getElapsedTime(),
-            completion = (elapsed / duration) * 100;
+            updateBag = {};
 
-        let result = this
-            .compute(cache, elapsed, duration, ease, target, origin, null, ignore)
-            .filter(eased => {
+        let result = this.compute(cache, elapsed, duration, ease, target, cache.origin, null, ignore);
 
+        /**
+         * If its an array means user has sent a object as origin therefore
+         * it should be filtered until all items are completed
+         */
+        if (Array.isArray(result)) {
+
+            result = result.filter(eased => {
+                // console.log(origin, cache.origin)
                 /**
                  * If its desired to manually assign the value to the object,
                  * then let it happens
@@ -74,18 +95,31 @@ export class Tween {
                 if (transform) {
                     transform(origin, eased.property, eased.value)
                 } else {
-
                     /**
                      * Set computed value into the original instance
                      */
-                    dot(origin, eased.property, eased.value)
+                    if (eased.property !== null)
+                        dot(origin, eased.property, eased.value)
                 }
+
+                /**
+                 * Assign the property to be send to the update callback
+                 */
+                updateBag[eased.property] = eased
 
                 return eased.complete;
 
-            })
+            });
 
-        if (result.length) {
+        } else {
+            updateBag = result
+        }
+
+        /**
+         * If update returns true, lets consider that the user wants the animation
+         * to freezes at that point until it returns otherwise
+         */
+        if ((!item.update(updateBag, elapsed) && (<any[]>result).length) || (<PropertyCompletion>result).complete) {
             this.pool.pop()
             item.complete()
             item.cache.promise()
@@ -94,41 +128,57 @@ export class Tween {
     }
 
     private compute(cache, elapsed: number, duration: number, ease,
-                    target: number | Object, origin: number | Object,
+                    target: number | Object | any, origin: number | Object | any,
                     property: string | null = null,
-                    ignore: string[] = []): PropertyCompletion[] {
+                    ignore: string[] = []): PropertyCompletion[] | PropertyCompletion {
 
         if (origin instanceof Object) {
 
             return cache.properties.map(key => {
 
-                // Only call once just in case it is a getter which can change on every time it is called
+                /**
+                 * Only call once just in case it is a
+                 * getter which could change on every time it is called
+                 */
                 let previous = origin[key];
 
-                return typeof previous === 'number' ? this.compute(
+                if (typeof previous === 'number') {
+                    return this.compute(
                         cache, elapsed, duration, ease, target[key] || target, previous, property ? `${property}.${key}` : key, ignore
-                    ) : [];
-            }) .reduce((a, b) => a.concat(b), [])
+                    )
+                }
+
+                return [];
+
+            }).reduce((a, b) => a.concat(b), [])
 
         }
 
         let completion = (elapsed / duration) * 100,
             complete = completion >= 100;
 
-        return <any>{
+        return {
             property: property,
             complete: complete,
-            completion: completion,
+            completion: complete ? 100 : completion,
             value: complete ? target : this.ease[ease](
-                    elapsed, 0, target, duration
+                    elapsed, origin, target - origin, duration
                 )
         }
 
     }
 
-    public update(time: number, delta: number) {
+    public start() {
+        this.loop.start();
+    }
 
-        this.pool.forEach((item, index) => {
+    public stop() {
+        this.loop.stop();
+    }
+
+    public update(time: number, delta?: number) {
+
+        this.pool.forEach(item => {
             this.interpolate(item, time);
         })
 

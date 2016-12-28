@@ -1,25 +1,46 @@
 import { Tween } from "../source/tween";
+import { Vector } from "./Vector";
 
 const { describe, it } = require('mocha');
 const expect = require('expect.js');
 const raf = require('raf')
 
-describe('Tween', () => {
+class looper {
 
-    let tween: Tween,
-        vector: {}
-
-    beforeEach(() => {
-
-        tween = new Tween();
-        vector = {
-            x: 0, y: 0, z: 0
-        }
+    constructor() {
 
         raf(function tick(time) {
             tween.update(time, 0)
             raf(tick)
         });
+
+    }
+
+    public update() {
+
+    }
+
+    public start() {
+
+    }
+
+}
+
+describe('Tween', () => {
+
+    let tween: Tween,
+        vector: Vector
+
+    beforeEach(() => {
+
+        tween = new Tween(false);
+
+        raf(function tick(time) {
+            tween.update(time)
+            raf(tick)
+        })
+
+        vector = new Vector()
 
     });
 
@@ -42,6 +63,22 @@ describe('Tween', () => {
             origin: vector,
             target: 50,
             duration: 0,
+            complete(){
+                expect(vector).to.be.eql({ x: 50, y: 50, z: 50 })
+            }
+        })
+
+    })
+
+    it('should accept a single integer as origin as well', () => {
+
+        return tween.create({
+            origin: 10,
+            target: 50,
+            duration: 0,
+            update(property){
+                vector.setScalar(property.value)
+            },
             complete(){
                 expect(vector).to.be.eql({ x: 50, y: 50, z: 50 })
             }

@@ -1,18 +1,38 @@
-export interface TweenInterface {
+type Nested = { [key: string]: Nested | number };
+type Readonly<T> = {
+    readonly [P in keyof T]: T[P];
+    };
+type Partial<T> = {
+    [P in keyof T]?: T[P];
+    };
+
+export interface TweenRequiredInterface {
+    origin: Nested | number | {},
+    target: Nested | number | {},
+}
+
+export interface TweenOptionalInterface {
     ease?: string,
-    origin: {},
-    target: {},
     duration?: number,
+    ignore?: string[],
     complete(): void,
-    readonly cache?: {
-        properties: string[],
-        promise: () => void,
-        clock: {}
-    }
+    update?(properties: { [key: string]: PropertyCompletion } & PropertyCompletion, elapsed: number): boolean | void,
+}
+
+export interface TweenCacheInterface {
+    properties: string[],
+    promise: () => void,
+    clock: {},
+    origin: {},
+    target: {}
+}
+
+export interface TweenInterface extends TweenRequiredInterface, TweenOptionalInterface {
+    readonly cache?: TweenCacheInterface
 }
 
 export interface PropertyCompletion {
-    property: string, //dot.marked
+    property: string | null, //dot.marked
     complete: boolean,
     completion: number,
     value: number
