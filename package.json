@@ -1,8 +1,37 @@
 {
+  "name": "motion-tween",
+  "version": "1.0.0",
+  "description": "Tween property A to B over a given time and interpolation",
+  "keywords": [
+    "tween",
+    "engine",
+    "motion",
+    "interpolate",
+    "tweens",
+    "eases",
+    "easing",
+    "lerp"
+  ],
+  "author": {
+    "name": "Rafael Milewski",
+    "email": "rafael.milewski@gmail.com",
+    "url": "https://github.com/Milewski"
+  },
   "scripts": {
-    "build": "$(yarn bin)/tsc",
+    "build": "$(yarn bin)/webpack",
     "pretest": "npm run build",
-    "test": "$(yarn bin)/mocha --compilers js:babel-core/register"
+    "test": "$(yarn bin)/mocha --compilers js:babel-core/register",
+    "prepublish": "npm run build"
+  },
+  "main": "distribution/motion-tween.js",
+  "license": "MIT",
+  "homepage": "https://github.com/Milewski/motion-tween",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Milewski/motion-tween"
+  },
+  "bugs": {
+    "url": "https://github.com/Milewski/motion-tween/issues"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.34",

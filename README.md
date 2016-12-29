@@ -1,6 +1,6 @@
 #API
 
-```
+```javascript
 let tween = new Tween(false,null,60); // autoStart, loop engine,  framerate //still working on this
 let animation = tween.create({
         origin: object | number,
@@ -13,7 +13,7 @@ let animation = tween.create({
     })
 ```
 
-Play Animation simuntanosly
+Play Animation simultaneously
 
 ```javascript
 let tween = new Tween(),

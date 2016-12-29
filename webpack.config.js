@@ -1,23 +1,21 @@
 const webpack = require('webpack');
 
-
 module.exports = {
-    watch: true,
+    watch: false,
     entry: {
-        tween: './source/Tween.js',
-        test: './source/Test.js',
+        tween: './source/Tween.js'
     },
     output: {
-        filename: '[name].js',
+        filename: 'motion-tween.js',
         path: './distribution'
     },
     plugins:[
-        // new webpack.optimize.UglifyJsPlugin({
-        //     mangle: false,
-        //     comments: false,
-        //     compress: {
-        //         warnings: false
-        //     }
-        // })
+        new webpack.optimize.UglifyJsPlugin({
+            mangle: true,
+            comments: false,
+            compress: {
+                warnings: false
+            }
+        })
     ]
 }
