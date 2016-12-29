@@ -1,8 +1,8 @@
 import { TweenInterface, PropertyCompletion } from "./Interfaces/TweenInterface";
 import { Ease } from "./Ease";
+import { CustomPromise } from "./CustomPromise";
 import { dot, extend, cloneBasedOnTarget } from "./Helpers";
 import { Looper } from "./Looper";
-import clone = THREE.UniformsUtils.clone;
 
 export class Tween {
 
@@ -35,21 +35,18 @@ export class Tween {
 
     }
 
-    public create(options: TweenInterface) {
+    public create(options: TweenInterface & TweenInterface[] | any) {
 
-        options = extend(this.defaults, options);
+        let queue = [];
 
-        // options.duration *=  1000;
-        if (typeof options.origin !== typeof options.target) {
-            // throw new TypeError('Origin and Target must to be the same type of object');
-            // console.log(options)
+        if (Array.isArray(options)) {
+            queue = options;
+            options = options.shift()
         }
 
-        if (options.origin instanceof Object) {
-            // console.log('its an object')
-        } else {
+        let original = options;
 
-        }
+        options = extend({}, this.defaults, options);
 
         /**
          * Cache Properties
@@ -62,14 +59,18 @@ export class Tween {
             options.origin, (options.target instanceof Object) ? options.target : options.origin
         )
 
+        options.cache.queue = queue;
+
+        // options.cache.duration = sum(options.duration)
+
         this.pool.push(options)
 
         if (this.autoStart)
             this.start();
 
-        return new Promise(function (accept) {
+        return new CustomPromise(accept => {
             options.cache.promise = accept
-        });
+        }, original, options);
 
     }
 
@@ -95,6 +96,7 @@ export class Tween {
                 if (transform) {
                     transform(origin, eased.property, eased.value)
                 } else {
+
                     /**
                      * Set computed value into the original instance
                      */
@@ -119,10 +121,29 @@ export class Tween {
          * If update returns true, lets consider that the user wants the animation
          * to freezes at that point until it returns otherwise
          */
-        if ((!item.update(updateBag, elapsed) && (<any[]>result).length) || (<PropertyCompletion>result).complete) {
-            this.pool.pop()
+
+        if ((!item.update(updateBag, elapsed) && (<any[]>result).length === item.cache.properties.length)
+            || (<PropertyCompletion>result).complete) {
+
+            this.remove(item)
             item.complete()
             item.cache.promise()
+
+            /**
+             * if there is no more items in the queue, reset the counter
+             * *Loop may be undefined due to the ability to use your own loop
+             */
+            if (this.loop && !this.pool.length) {
+                this.loop.reset()
+            }
+
+            /**
+             * if there are more items to play send them now
+             */
+            if (item.cache.queue.length) {
+                this.create(item.cache.queue)
+            }
+
         }
 
     }
@@ -144,7 +165,7 @@ export class Tween {
 
                 if (typeof previous === 'number') {
                     return this.compute(
-                        cache, elapsed, duration, ease, target[key] || target, previous, property ? `${property}.${key}` : key, ignore
+                        cache, elapsed, duration[key] || duration, ease[key] || ease, target[key] || target, previous, property ? `${property}.${key}` : key, ignore
                     )
                 }
 
@@ -168,6 +189,12 @@ export class Tween {
 
     }
 
+    private remove(item: TweenInterface) {
+        this.pool.splice(
+            this.pool.indexOf(item), 1
+        )
+    }
+
     public start() {
         this.loop.start();
     }
@@ -179,7 +206,7 @@ export class Tween {
     public update(time: number, delta?: number) {
 
         this.pool.forEach(item => {
-            this.interpolate(item, time);
+            this.interpolate(item, time / 1000);
         })
 
     }

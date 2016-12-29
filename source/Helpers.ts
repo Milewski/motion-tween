@@ -1,3 +1,4 @@
+import { type } from "os";
 /**
  * Deep set a property into an object dot.marked
  * @param object
@@ -65,3 +66,28 @@ export const cloneBasedOnTarget = (origin: {}, target: {} = origin) => {
     return clone
 
 }
+
+export const stripe = <A>(type: string, object: A): A => {
+
+    for (let key in object) {
+        if (typeof  object[key] === type) {
+            delete object[key];
+        }
+    }
+
+    return object
+
+}
+
+// export const sum = (object): number => {
+//
+//     if (typeof object === 'number') return object;
+//
+//     let sum = 0;
+//
+//     for (let key in object) {
+//         sum += parseInt(object[key])
+//     }
+//
+//     return sum;
+// }

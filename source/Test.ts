@@ -21,22 +21,56 @@ let animation = new Tween()
 
 let object: TweenInterface = {
     origin: cube.position,
-    target: 3,
-    ignore: ['y', 'z'],
-    duration: 5,
-    update(a){},
+    target: {
+        x: 3
+    },
+    duration: 2,
+    ease: Tween.easings.LINEAROUT,
+    update(a){
+        // console.log(a)
+    },
     // transform: function (object: any, property: string, value: number) {
     //     object[property.substring(1)] = value;
     // },
     complete(){
-        console.log('done')
-        // animation.stop()
+        console.log('shit')
     },
-    ease: Tween.easings.BOUNCEOUT
 }
 
-animation.create(<any>object);
+animation
+    .create(<any>object)
+    .then({
+        duration: .5,
+        ease: Tween.easings.BOUNCEOUT,
+        target: { y: 3 },
+        complete(){
+            console.log('porra')
+        }
+    })
+    .then({
+        duration: 1,
+        ease: Tween.easings.BOUNCEOUT,
+        target: { y: -3, x: -3 }
+    })
+
+// let last = animation.create({
+//     origin: cube.position,
+//     ignore: ['x', 'y'],
+//     target: {
+//         z: -3
+//     },
+//     update(a){
+//         // console.info(a)
+//     },
+//     ease: Tween.easings.BOUNCEOUT,
+//     duration: 1,
+//     complete(){
+//         console.error('y done')
+//     },
+// })
+
 animation.start();
+
 
 // setInterval(() => {
 //     console.log('anim one second', new Date().getSeconds())

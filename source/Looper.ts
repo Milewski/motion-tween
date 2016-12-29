@@ -33,8 +33,8 @@ export class Looper {
         if (this.intervalElapsedTime >= this.interval) {
 
             this.callback({
-                delta: this.intervalElapsedTime / 1000,
-                time: this.elapsed / 1000
+                delta: this.intervalElapsedTime,
+                time: this.elapsed
             })
 
             this.intervalElapsedTime %= this.interval
@@ -48,16 +48,20 @@ export class Looper {
     start() {
         if (!this.running) {
             this.running = true;
-            this.frameID = requestAnimationFrame((now) => {
+            this.frameID = requestAnimationFrame(now => {
                 this.oldTime = now
                 this.loop(0)
             });
         }
     }
 
+    reset() {
+        this.elapsed = 0
+    }
+
     stop() {
-        // this.running = false;
-        // cancelAnimationFrame(this.frameID);
+        this.running = false;
+        cancelAnimationFrame(this.frameID);
     }
 
 }

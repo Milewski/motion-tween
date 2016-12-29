@@ -1,10 +1,12 @@
 type Nested = { [key: string]: Nested | number };
-type Readonly<T> = {
-    readonly [P in keyof T]: T[P];
-    };
-type Partial<T> = {
-    [P in keyof T]?: T[P];
-    };
+type NestedString = { [key: string]: NestedString | string };
+
+// type Readonly<T> = {
+//     readonly [P in keyof T]: T[P]
+//     }
+// type Partial<T> = {
+//     [P in keyof T]?: T[P]
+//     }
 
 export interface TweenRequiredInterface {
     origin: Nested | number | {},
@@ -12,16 +14,18 @@ export interface TweenRequiredInterface {
 }
 
 export interface TweenOptionalInterface {
-    ease?: string,
-    duration?: number,
+    ease?: NestedString | string,
+    duration?: Nested | number,
     ignore?: string[],
-    complete(): void,
+    complete?(): void,
     update?(properties: { [key: string]: PropertyCompletion } & PropertyCompletion, elapsed: number): boolean | void,
 }
 
 export interface TweenCacheInterface {
     properties: string[],
     promise: () => void,
+    // duration: number,
+    queue: TweenInterface[],
     clock: {},
     origin: {},
     target: {}
