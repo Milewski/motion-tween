@@ -9,7 +9,16 @@ module.exports = {
         filename: 'motion-tween.js',
         path: './distribution'
     },
-    plugins:[
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: 'babel-loader'
+            }
+        ]
+    },
+    plugins: [
         new webpack.optimize.UglifyJsPlugin({
             mangle: true,
             comments: false,

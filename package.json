@@ -1,6 +1,6 @@
 {
   "name": "motion-tween",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Tween property A to B over a given time and interpolation",
   "keywords": [
     "tween",
@@ -17,10 +17,16 @@
     "email": "rafael.milewski@gmail.com",
     "url": "https://github.com/Milewski"
   },
+  "types": "declaration/Raf.d.ts",
+  "files": [
+    "declaration",
+    "distribution/motion-tween.js",
+    "test"
+  ],
   "scripts": {
-    "build": "$(yarn bin)/webpack",
+    "build": "webpack",
     "pretest": "npm run build",
-    "test": "$(yarn bin)/mocha --compilers js:babel-core/register",
+    "test": "mocha --compilers js:babel-core/register",
     "prepublish": "npm run build"
   },
   "main": "distribution/motion-tween.js",
@@ -37,11 +43,15 @@
     "@types/mocha": "^2.2.34",
     "@types/node": "^6.0.53",
     "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
     "babel-preset-latest": "^6.16.0",
     "expect.js": "^0.3.1",
     "mocha": "^3.2.0",
     "raf": "^3.3.0",
     "typescript": "^2.1.4",
     "webpack": "2.2.0-rc.3"
+  },
+  "dependencies": {
+    "motion-tween-raf-engine": "^1.0.5"
   }
 }

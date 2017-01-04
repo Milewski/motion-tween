@@ -7,7 +7,7 @@ import { TweenInterface } from "./Interfaces/TweenInterface";
 export class CustomPromise extends Promise {
 
     constructor(callback: Function, private options: any, private current: TweenInterface) {
-        super(callback)
+        super(<any>callback)
     }
 
     then(options: Function | {}) {

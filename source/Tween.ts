@@ -2,14 +2,14 @@ import { TweenInterface, PropertyCompletion } from "./Interfaces/TweenInterface"
 import { Ease } from "./Ease";
 import { CustomPromise } from "./CustomPromise";
 import { dot, extend, cloneBasedOnTarget } from "./Helpers";
-import { Looper } from "./Looper";
+import { RAF } from "motion-tween-raf-engine";
 
 export class Tween {
 
     static easings = Ease;
     private pool = [];
     private ease = new Ease();
-    private loop: Looper;
+    private loop: RAF;
 
     get defaults() {
         return {
@@ -25,7 +25,7 @@ export class Tween {
     }
 
     constructor(public autoStart: boolean = true,
-                public loopEngine: any = Looper,
+                public loopEngine: any = RAF,
                 public frameRate: number = 60) {
 
         if (autoStart)
@@ -88,7 +88,7 @@ export class Tween {
         if (Array.isArray(result)) {
 
             result = result.filter(eased => {
-                // console.log(origin, cache.origin)
+
                 /**
                  * If its desired to manually assign the value to the object,
                  * then let it happens

@@ -1,5 +1,5 @@
-type Nested = { [key: string]: Nested | number };
-type NestedString = { [key: string]: NestedString | string };
+export type Nested = { [key: string]: Nested | number };
+export type NestedString = { [key: string]: NestedString | string };
 
 // type Readonly<T> = {
 //     readonly [P in keyof T]: T[P]

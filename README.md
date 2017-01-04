@@ -67,16 +67,16 @@ tween.create({
         target: { x: 20 }
     })
     .then({
-        duration: 5
+        duration: 5,
         target: { y: 50 },
         complete(){
             //do something
         }
     })
     .then({
-        origin: anotherObject
+        origin: anotherObject,
         //target will be equivalent as the previous on the chain unless you replace it here
-        duration: 5
+        duration: 5,
         target: { y: 50 }
     })
     .then(function(){
@@ -84,13 +84,13 @@ tween.create({
     })
 ```
 
-You can use your own update function in case you aready is using requestAnimationFrame or if u dont really want to use it.
+You can use your own update function in case you already are using requestAnimationFrame or if u don't really want to use it.
 
 ```javascript
 
 let tween = new Tween(false),
 
-//elapsed time since start it could be performace.now() or Date().getTime()
+//elapsed time since start it could be performance.now() or Date().getTime()
 
 yourLoopFunction(function(time){ 
     tween.update(time)
