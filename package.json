@@ -1,6 +1,6 @@
 {
   "name": "motion-tween",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Tween property A to B over a given time and interpolation",
   "keywords": [
     "tween",
@@ -17,7 +17,7 @@
     "email": "rafael.milewski@gmail.com",
     "url": "https://github.com/Milewski"
   },
-  "types": "declaration/Raf.d.ts",
+  "types": "declaration/source/Tween.d.ts",
   "files": [
     "declaration",
     "distribution/motion-tween.js",
