@@ -7,7 +7,8 @@ module.exports = {
     },
     output: {
         filename: 'motion-tween.js',
-        path: './distribution'
+        path: './distribution',
+        libraryTarget: 'commonjs2'
     },
     module: {
         rules: [
