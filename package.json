@@ -1,6 +1,6 @@
 {
   "name": "motion-tween",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Tween property A to B over a given time and interpolation",
   "keywords": [
     "tween",

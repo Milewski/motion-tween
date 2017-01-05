@@ -4,7 +4,7 @@ import { CustomPromise } from "./CustomPromise";
 import { dot, extend, cloneBasedOnTarget } from "./Helpers";
 import { RAF } from "motion-tween-raf-engine";
 
-export class Tween {
+export default class Tween {
 
     static easings = Ease;
     private pool = [];
