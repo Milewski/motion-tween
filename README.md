@@ -1,5 +1,7 @@
 #API
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Milewski/motion-tween.svg)](https://greenkeeper.io/)
+
 ```javascript
 let tween = new Tween(false,null,60); // autoStart, loop engine,  framerate //still working on this
 let animation = tween.create({
