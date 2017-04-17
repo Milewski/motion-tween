@@ -72,108 +72,25 @@ export class MotionTween implements MotionTweenInterface {
 
     private interpolate(tween: Tween, elapsed: number) {
 
-        let { cache, duration, target, origin, ease, transform, ignore } = tween,
-            updateBag = {};
+        for (let ease in tween.properties) {
 
-        let result = this.compute(cache, elapsed - this.timer, duration, ease, target, cache.origin, null, ignore);
-// console.log(result)
-        /**
-         * If its an array means user has sent an object as origin therefore
-         * it should be filtered until all items are completed
-         */
-        if (Array.isArray(result)) {
+            for (let duration in tween.properties[ease]) {
 
-            result = result.filter(eased => {
+                for (let value in tween.properties[ease][duration]) {
 
-                /**
-                 * If its desired to manually assign the value to the object,
-                 * then let it happens
-                 */
-                if (transform) {
-                    transform(origin, eased.property, eased.value)
-                } else {
-console.log(eased)
-                    /**
-                     * Set computed value into the original instance
-                     */
-                    if (eased.property !== null)
-                        dot(origin, eased.property, eased.value)
+                    tween.properties[ease][duration][value].forEach(element => {
+                       console.log(element)
+                    })
+
                 }
 
-                /**
-                 * Assign the property to be send to the update callback
-                 */
-                updateBag[eased.property] = eased
-
-                return eased.complete;
-
-            });
-
-        } else {
-            updateBag = result
-        }
-
-        /**
-         * If update returns true, lets consider that the user wants the animation
-         * to freezes at that point until it returns otherwise
-         */
-        tween.update(updateBag, elapsed)
-
-        if ((result.length === tween.cache.properties.length) || result.complete) {
-
-            this.remove(tween)
-
-            tween.cache.promise.resolve(
-                tween.complete()
-            )
+            }
 
         }
 
     }
 
-    public compute(cache, elapsed, duration, ease, target, origin, property, ignore = []) {
-
-        if (origin instanceof Object) {
-
-            return cache.properties.map(key => {
-
-                /**
-                 * Only call once just in case it is a
-                 * getter which could change on every time it is called
-                 */
-                let previous = origin[key];
-
-                if (typeof previous === 'number') {
-
-                    duration = duration[key] || duration;
-                    ease = ease[key] || ease;
-                    target = target[key] || target;
-                    property = property ? `${property}.${key}` : key;
-
-                    return this.compute(
-                        cache, elapsed, duration, ease, target, previous, property, ignore
-                    )
-
-                }
-
-                return [];
-
-            }).reduce((a, b) => a.concat(b), [])
-
-        }
-
-        let completion = (elapsed / duration) * 100,
-            complete = completion >= 100;
-
-        return {
-            property,
-            complete,
-            completion: complete ? 100 : completion,
-            value: complete ? target : this.eases[ease](
-                elapsed, origin, target - origin, duration
-            )
-        }
-
+    public compute() {
     }
 
     private remove(tween: Tween) {

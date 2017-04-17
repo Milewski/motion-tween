@@ -1,11 +1,18 @@
 import { TweenProperty } from "./TweenProperty";
 import { dot, flat } from "./Helpers";
+import { Ease } from "./Ease";
 
 export class Tween {
 
-    public properties: { [duration: string]: { [value: string]: TweenProperty[] } } = {}
+    public properties: {
+        [ease: string]: {
+            [duration: string]: {
+                [value: string]: TweenProperty[]
+            }
+        }
+    } = {}
 
-    constructor({ target, origin, duration = 1 }) {
+    constructor({ target, origin, ease = Ease.LINEAR, duration = 1 }) {
 
         if (target instanceof Object) {
 
@@ -14,28 +21,33 @@ export class Tween {
                 const property = new TweenProperty(origin, { path, duration, target: value });
 
                 /**
+                 * Group by Ease
+                 */
+                if (!this.properties[ease]) {
+                    this.properties[ease] = {}
+                }
+
+                /**
                  * Group by Duration
                  */
                 const timing = typeof duration === 'object' ? dot(duration, path) : duration;
 
-                if (!this.properties[timing]) {
-                    this.properties[timing] = {}
+                if (!this.properties[ease][timing]) {
+                    this.properties[ease][timing] = {}
                 }
 
                 /**
                  * Group by Value
                  */
-                if (!this.properties[timing][value]) {
-                    this.properties[timing][value] = []
+                if (!this.properties[ease][timing][value]) {
+                    this.properties[ease][timing][value] = []
                 }
 
-                this.properties[timing][value].push(property)
+                this.properties[ease][timing][value].push(property)
 
             }
 
         }
-
-        console.dir(this.properties)
 
     }
 
