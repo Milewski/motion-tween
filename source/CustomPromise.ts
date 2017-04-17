@@ -1,26 +1,27 @@
-import { extend, stripe } from "./Helpers";
 import { TweenInterface } from "./Interfaces/TweenInterface";
+import { Promise } from "es6-promise";
+import { Tween } from "./Tween";
 
 /**
  * Promise
  */
-export class CustomPromise extends Promise {
+export class CustomPromise {
 
-    constructor(callback: Function, private options: any, private current: TweenInterface) {
-        super(<any>callback)
+    private promise;
+
+    constructor(callback: Function, private tween: Tween) {
+        this.promise = new Promise(accept => callback(accept))
     }
 
-    then(options: Function | {}) {
+    then(options: Function | TweenInterface) {
 
-        if (typeof options === 'object') {
-            this.current.cache.queue.push(
-                extend({}, stripe('function', this.options), options)
-            );
-        } else {
-            options()
-        }
+        // if (typeof options === 'object') {
+        //     this.tween.cache.queue.push(
+        //         extend({}, stripe('function', this.options), options)
+        //     );
+        // }
 
-        return this;
+        return this.promise.then(options);
 
     }
 

@@ -1,10 +1,5 @@
-import { type } from "os";
 /**
  * Deep set a property into an object dot.marked
- * @param object
- * @param path
- * @param value
- * @returns {any}
  */
 export const dot = function (object: any, path: string, value?: any) {
 
@@ -20,12 +15,25 @@ export const dot = function (object: any, path: string, value?: any) {
 
 }
 
+export const flat = (object, path = '') => {
+
+    return Object.keys(object).map(property => {
+
+        if ((typeof object[property]) === 'object' && object[property] !== null) {
+            return flat(object[property], `${path}${property}.`).reduceRight(prop => prop)
+        }
+
+        return {
+            path: path + property,
+            value: object[property]
+        }
+
+    })
+
+}
+
 /**
  * Extend Object
- *
- * @param defaults
- * @param object
- * @returns {any}
  */
 export const extend = (defaults: any, ...object: any[]): any => {
 
@@ -78,16 +86,3 @@ export const stripe = <A>(type: string, object: A): A => {
     return object
 
 }
-
-// export const sum = (object): number => {
-//
-//     if (typeof object === 'number') return object;
-//
-//     let sum = 0;
-//
-//     for (let key in object) {
-//         sum += parseInt(object[key])
-//     }
-//
-//     return sum;
-// }

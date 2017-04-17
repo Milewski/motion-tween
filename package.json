@@ -1,6 +1,6 @@
 {
   "name": "motion-tween",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "Tween property A to B over a given time and interpolation",
   "keywords": [
     "tween",
@@ -15,21 +15,21 @@
   "author": {
     "name": "Rafael Milewski",
     "email": "rafael.milewski@gmail.com",
-    "url": "https://github.com/Milewski"
+    "url": "https://github.com/milewski"
   },
   "types": "declaration/source/Tween.d.ts",
+  "main": "distribution/motion-tween.js",
   "files": [
     "declaration",
-    "distribution/motion-tween.js",
-    "test"
+    "distribution/*.js"
   ],
   "scripts": {
-    "build": "webpack",
+    "build": "rollup -c",
+    "build-examples": "tsc -p examples && npm run build",
     "pretest": "npm run build",
     "test": "mocha --compilers js:babel-core/register",
     "prepublish": "npm run build"
   },
-  "main": "distribution/motion-tween.js",
   "license": "MIT",
   "homepage": "https://github.com/Milewski/motion-tween",
   "repository": {
@@ -45,13 +45,28 @@
     "babel-core": "^6.21.0",
     "babel-loader": "^6.2.10",
     "babel-preset-latest": "^6.16.0",
+    "es6-promise": "^4.1.0",
     "expect.js": "^0.3.1",
+    "html-webpack-inline-chunk-plugin": "^1.0.0",
+    "html-webpack-inline-source-plugin": "0.0.6",
     "mocha": "^3.2.0",
     "raf": "^3.3.0",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-typescript": "^0.8.1",
+    "rollup-watch": "^3.2.2",
+    "three": "^0.83.0",
     "typescript": "^2.1.4",
-    "webpack": "2.2.0-rc.3"
+    "webpack": "~2.4.1"
   },
   "dependencies": {
-    "motion-tween-raf-engine": "^1.0.5"
+    "@types/three": "^0.81.0",
+    "animitter": "^3.0.0",
+    "expose-loader": "^0.7.1",
+    "handlebars": "^4.0.6",
+    "handlebars-loader": "^1.4.0",
+    "html-webpack-plugin": "^2.26.0",
+    "raw-loader": "^0.5.1",
+    "rollup": "^0.41.6"
   }
 }

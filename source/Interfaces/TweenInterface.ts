@@ -14,16 +14,16 @@ export interface TweenRequiredInterface {
 }
 
 export interface TweenOptionalInterface {
-    ease?: NestedString | string,
+    // ease?: NestedString | string,
     duration?: Nested | number,
-    ignore?: string[],
-    complete?(): void,
-    update?(properties: { [key: string]: PropertyCompletion } & PropertyCompletion, elapsed: number): boolean | void,
+    // ignore?: string[],
+    complete?(): any,
+    // update?(properties: { [key: string]: PropertyCompletion } & PropertyCompletion, elapsed: number): boolean | void,
 }
 
 export interface TweenCacheInterface {
     properties: string[],
-    promise: () => void,
+    promise: (response?: any) => void,
     // duration: number,
     queue: TweenInterface[],
     clock: {},
@@ -40,4 +40,8 @@ export interface PropertyCompletion {
     complete: boolean,
     completion: number,
     value: number
+}
+
+export interface MotionTweenOptions {
+
 }

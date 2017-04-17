@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es6",
+    "allowJs": true,
     "sourceMap": true,
     "declarationDir": "declaration",
     "declaration": true,
@@ -15,3 +16,4 @@
     "declaration"
   ]
 }
+
