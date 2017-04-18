@@ -4,7 +4,7 @@ const typescript = require("rollup-plugin-typescript");
 const resolve = require("rollup-plugin-node-resolve");
 const commonjs = require("rollup-plugin-commonjs");
 module.exports = {
-    entry: 'source/Tween.ts',
+    entry: 'source/MotionTween.ts',
     format: 'umd',
     moduleName: 'MotionTween',
     dest: 'distribution/motion-tween.js',

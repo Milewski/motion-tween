@@ -25,54 +25,141 @@ describe('Tween', () => {
     });
 
     it('should work with the most basic settings', () => {
+        return tween.create({ origin: 0, target: 10 })
+    })
+
+    it('should interpolate origin with target (as number)', () => {
 
         return tween.create({
-            origin: 0,
-            target: 10
+            origin: vector,
+            target: 10,
+            complete: () => expect(vector).to.be.eql({ x: 10, y: 10, z: 10 })
         })
 
     })
 
-    it('should interpolate origin with target (as number)', done => {
+    it('should interpolate origin with target (as object)', () => {
+
+        return tween.create({
+            origin: vector,
+            target: { x: 2, y: 4, z: 6 },
+            complete: () => expect(vector).to.be.eql({ x: 2, y: 4, z: 6 })
+        })
+
+    })
+
+    it('should not touch properties unset in target', () => {
+
+        return tween.create({
+            origin: vector,
+            target: { x: 1, y: 2 },
+            complete: () => expect(vector).to.be.eql({ x: 1, y: 2, z: 0 })
+        })
+
+    })
+
+    it('should consider the duration (as number)', () => {
+
+        return tween.create({
+            origin: vector,
+            target: 10,
+            duration: 1,
+            complete: () => expect(vector).to.be.eql({ x: 10, y: 10, z: 10 })
+        })
+
+    })
+
+    it('should consider the duration (as object)', () => {
+
+        return tween.create({
+            origin: vector,
+            target: 5,
+            duration: { x: 2 / 100, y: 2 / 50, z: 1 / 30 },
+            complete: () => expect(vector).to.be.eql({ x: 5, y: 5, z: 5 })
+        })
+
+    })
+
+    it('should call the events on the correct order', () => {
+
+        let start = false,
+            update = false,
+            complete = false;
+
+        return tween.create({
+            origin: vector,
+            target: 10,
+            duration: 0,
+            start: () => {
+                expect({ start, update, complete }).to.be.eql({ start: false, update: false, complete: false })
+                expect(vector).to.be.eql({ x: 0, y: 0, z: 0 })
+                start = true
+            },
+            update: () => {
+                expect({ start, update, complete }).to.be.eql({ start: true, update: false, complete: false })
+                update = true
+            },
+            complete: () => {
+                expect({ start, update, complete }).to.be.eql({ start: true, update: true, complete: false })
+                expect(vector).to.be.eql({ x: 10, y: 10, z: 10 })
+            }
+        })
+
+    })
+
+    it('should call then after chain has been completed', () => {
+
+        let completed = 'no';
+
+        return tween.create({
+            origin: vector,
+            target: 10,
+            complete: () => completed = 'yes'
+        }).then(() => {
+            expect(completed).to.be('yes')
+        })
+
+    });
+
+    it('should allow chaining', () => {
+
+        return tween.create({
+            origin: vector,
+            target: 10,
+            duration: .5,
+            complete: () => expect(vector).to.be.eql({ x: 10, y: 10, z: 10 })
+        }).then({
+            origin: vector,
+            target: 20,
+            complete: () => expect(vector).to.be.eql({ x: 20, y: 20, z: 20 })
+        })
+
+    })
+
+    it.only('should allow chaining more than once', done => {
 
         tween.create({
             origin: vector,
             target: 10,
-            complete(){
-                expect(vector).to.be.eql({ x: 10, y: 10, z: 10 })
-                done()
-            }
-        })
-
-    })
-
-    it.only('should interpolate origin with target (as object)', done => {
-
-        tween.create({
+            duration: .5,
+            complete: () => expect(vector).to.be.eql({ x: 10, y: 10, z: 10 })
+        }).then({
             origin: vector,
-            target: { x: 25, y: 25, z: 1 },
-            complete(){
-                expect(vector).to.be.eql({ x: 50, y: 25, z: 1 })
+            target: 20,
+            duration: .5,
+            complete: () => expect(vector).to.be.eql({ x: 20, y: 20, z: 20 })
+        }).then({
+            origin: vector,
+            target: 30,
+            duration: .5,
+            complete: () => {
+                expect(vector).to.be.eql({ x: 30, y: 30, z: 30 })
                 done()
             }
         })
 
     })
 
-    // it('should call then after chain has been completed', () => {
-    //
-    //     let completed = 'no';
-    //
-    //     return tween.create({
-    //         origin: vector,
-    //         target: { x: 50 },
-    //         complete: () => completed = 'yes'
-    //     }).then(response => {
-    //         expect(completed).to.be('yes')
-    //         expect(response).to.be('yes')
-    //     })
-    //
-    // });
     //
     // it('should tween only the property specified given in target and leave the others untouched', done => {
     //

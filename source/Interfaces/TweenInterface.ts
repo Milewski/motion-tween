@@ -1,5 +1,7 @@
+import { CustomPromise } from "../CustomPromise";
 export type Nested = { [key: string]: Nested | number };
 export type NestedString = { [key: string]: NestedString | string };
+
 
 // type Readonly<T> = {
 //     readonly [P in keyof T]: T[P]
@@ -16,8 +18,10 @@ export interface TweenRequiredInterface {
 export interface TweenOptionalInterface {
     // ease?: NestedString | string,
     duration?: Nested | number,
+    start?(): any,
     // ignore?: string[],
     complete?(): any,
+    update?(): any,
     // update?(properties: { [key: string]: PropertyCompletion } & PropertyCompletion, elapsed: number): boolean | void,
 }
 
@@ -32,7 +36,9 @@ export interface TweenCacheInterface {
 }
 
 export interface TweenInterface extends TweenRequiredInterface, TweenOptionalInterface {
-    readonly cache?: TweenCacheInterface
+    resolver?: Function
+    promise?: Promise<any>
+    queue?: TweenInterface[]
 }
 
 export interface PropertyCompletion {

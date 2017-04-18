@@ -15,7 +15,7 @@ export const dot = function (object: any, path: string, value?: any) {
 
 }
 
-export const flat = (object, path = '') => {
+export const flat = (object: {}, path = '') => {
 
     return Object.keys(object).map(property => {
 
@@ -78,7 +78,7 @@ export const cloneBasedOnTarget = (origin: {}, target: {} = origin) => {
 export const stripe = <A>(type: string, object: A): A => {
 
     for (let key in object) {
-        if (typeof  object[key] === type) {
+        if (typeof object[key] === type) {
             delete object[key];
         }
     }

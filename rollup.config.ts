@@ -3,7 +3,7 @@ import * as resolve from 'rollup-plugin-node-resolve';
 import * as commonjs from 'rollup-plugin-commonjs';
 
 module.exports = {
-    entry: 'source/Tween.ts',
+    entry: 'source/MotionTween.ts',
     format: 'umd',
     moduleName: 'MotionTween',
     dest: 'distribution/motion-tween.js',
