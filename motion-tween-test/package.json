@@ -1,0 +1,16 @@
+{
+  "name": "motion-tween-test",
+  "version": "0.0.1",
+  "scripts": {
+    "compile": "webpack"
+  },
+  "dependencies": {
+    "@types/node": "^7.0.12",
+    "@types/three": "^0.84.3",
+    "three": "^0.84.0",
+    "webpack": "^2.4.1"
+  },
+  "devDependencies": {
+    "typescript": "^2.2.2"
+  }
+}
