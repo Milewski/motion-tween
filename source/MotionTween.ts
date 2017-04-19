@@ -28,11 +28,12 @@ export class MotionTween implements MotionTweenInterface {
             let options;
 
             if (tween.queue.length) {
-                options = tween.queue.shift();
-                options.queue = tween.queue;
+                this.pool.push(
+                    tween.chain(tween.queue.shift(), tween)
+                )
+            } else {
+                tween.resolver()
             }
-
-            tween.resolver(options)
 
             this.timer = elapsed
 

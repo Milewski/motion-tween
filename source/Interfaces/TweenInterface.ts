@@ -36,7 +36,7 @@ export interface TweenCacheInterface {
 }
 
 export interface TweenInterface extends TweenRequiredInterface, TweenOptionalInterface {
-    resolver?: Function
+    resolver?: () => void
     promise?: Promise<any>
     queue?: TweenInterface[]
 }

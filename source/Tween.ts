@@ -19,7 +19,7 @@ export class Tween {
 
     constructor(options: TweenInterface) {
 
-        const { target, origin, ease, duration, promise, queue, resolver, ...callbacks } = extend({}, this.defaults, options);
+        const { target, origin, ease, duration, queue, ...callbacks } = extend({}, this.defaults, options);
 
         this.events = new Events(callbacks);
 
@@ -39,34 +39,28 @@ export class Tween {
 
         }
 
-        // this.promise = promise;
-        // this.resolver = resolver;
-        //
-
         this.promise = new Promise(resolve => this.resolver = resolve)
 
-        if (queue) this.chain(...queue);
-
-        // if (!promise) {
-
-        // }
+        if (queue) this.queue = queue
 
     }
 
     public then(options: () => void | TweenInterface) {
 
         if (typeof options === 'object') {
-            return this.chain(options)
+            this.queue.push(options)
+            return this
         }
 
         // /**
         //  * If there is some items in the queue attach it to the last one
         //  */
+        // console.log(this.queue)
         // if (this.queue.length) {
         //     return this.queue[this.queue.length - 1].promise.then(options)
         // }
 
-        return this.promise.then(options);
+        return this.promise.then(options)
 
     }
 
@@ -92,17 +86,14 @@ export class Tween {
 
     }
 
-    public chain(...options: TweenInterface[]) {
+    public chain(options: TweenInterface, tween: Tween) {
 
-        options.forEach(option => {
-            this.promise.then(options => {
-                return new Tween(options).promise
-            })
-        })
+        const chain = new Tween(options)
 
-        this.queue.push(...options)
+        chain.queue = tween.queue
+        chain.promise.then(() => tween.resolver())
 
-        return this
+        return chain
 
     }
 
