@@ -6,10 +6,8 @@ export class MotionTween implements MotionTweenInterface {
 
     private pool: Tween[] = [];
     private timer = 0;
-    private promise: Promise<TweenInterface[]>
 
     constructor(options?: MotionTweenOptions) {
-
     }
 
     public create(options: TweenInterface) {
@@ -27,15 +25,22 @@ export class MotionTween implements MotionTweenInterface {
 
             this.remove(tween)
 
-            tween.resolver()
+            let options;
 
-            this.timer += elapsed
+            if (tween.queue.length) {
+                options = tween.queue.shift();
+                options.queue = tween.queue;
+            }
+
+            tween.resolver(options)
+
+            this.timer = elapsed
 
             return true
 
         }
 
-        return false;
+        return false
 
     }
 
@@ -50,11 +55,14 @@ export class MotionTween implements MotionTweenInterface {
         time = time / 1000;
 
         this.pool.forEach(tween => {
-
             if (this.interpolate(tween, time)) {
-                tween.promise.then(console.log)
-            }
+                tween.then(options => {
 
+                    if (options)
+                        return this.create(options).promise
+
+                })
+            }
         })
 
     }
