@@ -1,5 +1,6 @@
-import { CustomPromise } from "../CustomPromise";
+import { TweenProperty } from "../../declaration/source/TweenProperty";
 export type Nested = { [key: string]: Nested | number };
+export type NestedBoolean = { [key: string]: Nested | boolean };
 export type NestedString = { [key: string]: NestedString | string };
 
 
@@ -16,12 +17,12 @@ export interface TweenRequiredInterface {
 }
 
 export interface TweenOptionalInterface {
-    // ease?: NestedString | string,
+    ease?: NestedString | string,
     duration?: Nested | number,
     start?(): any,
-    // ignore?: string[],
+    ignore?: NestedBoolean | string[],
     complete?(): any,
-    update?(): any,
+    update?(properties: { [name: string]: TweenProperty } & TweenProperty): void,
     // update?(properties: { [key: string]: PropertyCompletion } & PropertyCompletion, elapsed: number): boolean | void,
 }
 
@@ -31,7 +32,7 @@ export interface TweenCacheInterface {
     // duration: number,
     queue: TweenInterface[],
     clock: {},
-    origin: {},
+
     target: {}
 }
 

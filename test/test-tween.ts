@@ -75,6 +75,12 @@ describe('Tween', () => {
             origin: vector,
             target: 5,
             duration: { x: 2 / 100, y: 2 / 50, z: 1 / 30 },
+            update: ({ x, y, z }) => {
+                if (!x.complete && !y.complete && !z.complete) {
+                    expect(x.value).not.to.be(y.value)
+                    expect(x.value).not.to.be(z.value)
+                }
+            },
             complete: () => expect(vector).to.be.eql({ x: 5, y: 5, z: 5 })
         })
 
@@ -95,9 +101,9 @@ describe('Tween', () => {
                 expect(vector).to.be.eql({ x: 0, y: 0, z: 0 })
                 start = true
             },
-            update: () => {
+            update: ({ x }) => {
                 expect({ start, update, complete }).to.be.eql({ start: true, update: false, complete: false })
-                update = true
+                update = x.complete
             },
             complete: () => {
                 expect({ start, update, complete }).to.be.eql({ start: true, update: true, complete: false })
@@ -136,7 +142,7 @@ describe('Tween', () => {
 
     })
 
-    it.only('should allow chaining more than once', done => {
+    it('should allow chaining more than once', done => {
 
         tween.create({
             origin: vector,
@@ -160,64 +166,91 @@ describe('Tween', () => {
 
     })
 
-    //
-    // it('should tween only the property specified given in target and leave the others untouched', done => {
-    //
-    //     tween.create({
-    //         origin: vector,
-    //         target: { x: 50 },
-    //         duration: 1,
-    //         complete(){
-    //             expect(vector).to.be.eql({ x: 50, y: 0, z: 0 })
-    //             done()
-    //         }
-    //     })
-    //
-    // });
-    //
-    // it('should accept a single integer as target to interpolate the origin', () => {
-    //
-    //     return tween.create({
-    //         origin: vector,
-    //         target: 50,
-    //         duration: 0,
-    //         complete(){
-    //             expect(vector).to.be.eql({ x: 50, y: 50, z: 50 })
-    //         }
-    //     })
-    //
-    // })
-    //
-    // it('should accept a single integer as origin as well', () => {
-    //
-    //     return tween.create({
-    //         origin: 10,
-    //         target: 50,
-    //         duration: 0,
-    //         update(property){
-    //             vector.setScalar(property.value)
-    //         },
-    //         complete(){
-    //             expect(vector).to.be.eql({ x: 50, y: 50, z: 50 })
-    //         }
-    //     })
-    //
-    // })
-    //
-    // it('should leave the ignored properties untouched', () => {
-    //
-    //     return tween.create({
-    //         origin: vector,
-    //         target: -95,
-    //         ignore: ['x', 'z'],
-    //         duration: 0,
-    //         complete(){
-    //             expect(vector).to.be.eql({ x: 0, y: -95, z: 0 })
-    //         }
-    //     })
-    //
-    // })
-    //
+    it('should accept different easing functions (as a const)', () => {
+
+        return tween.create({
+            origin: vector,
+            target: 5,
+            ease: 'quartIn',
+            update: ({ x, y, z }) => {
+                expect(x.value).to.be(y.value)
+                expect(x.value).to.be(z.value)
+            },
+            complete: () => expect(vector).to.be.eql({ x: 5, y: 5, z: 5 })
+        })
+
+    })
+
+    it('should accept different easing functions (as an object)', () => {
+
+        return tween.create({
+            origin: vector,
+            target: 50,
+            ease: {
+                x: 'quartIn',
+                y: 'expoIn',
+                z: 'bounceIn'
+            },
+            update: ({ x, y, z }) => {
+                if (!x.complete && y.complete && z.complete) {
+                    expect(x.value).not.to.be(y.value)
+                    expect(x.value).not.to.be(z.value)
+                }
+            },
+            complete: () => expect(vector).to.be.eql({ x: 50, y: 50, z: 50 })
+        })
+
+    })
+
+    it('should tween only the property specified given in target and leave the others untouched', () => {
+
+        return tween.create({
+            origin: vector,
+            target: { x: 50 },
+            duration: 2,
+            complete: () => expect(vector).to.be.eql({ x: 50, y: 0, z: 0 })
+        })
+
+    });
+
+    it('should accept a single integer as origin as well', () => {
+
+        return tween.create({
+            origin: 10,
+            target: 50,
+            duration: 0.10,
+            update: ({ value }) => vector.setScalar(value),
+            complete(){
+                expect(vector).to.be.eql({ x: 50, y: 50, z: 50 })
+            }
+        })
+
+    })
+
+    it('should leave the ignored properties untouched (as array of string)', () => {
+
+        return tween.create({
+            origin: vector,
+            target: -95,
+            ignore: ['x', 'z'],
+            duration: 0,
+            complete: () => expect(vector).to.be.eql({ x: 0, y: -95, z: 0 })
+        })
+
+    })
+
+    it('should leave the ignored properties untouched (as object)', () => {
+
+        return tween.create({
+            origin: vector,
+            target: -95,
+            ignore: { x: true, z: false },
+            duration: 0,
+            complete: () => expect(vector).to.be.eql({ x: 0, y: -95, z: -95 })
+        })
+
+    })
+
     // it('should allow to specify duration and eases as an object', () => {
     //
     //     return tween.create({

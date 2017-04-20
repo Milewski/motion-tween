@@ -15,20 +15,25 @@ export class TweenProperty {
     public ease: Function;
     public events: Events
 
-    constructor(object, { ease, path, target, duration = 1 }) {
+    constructor(object, { ease, path, target, duration = 1}) {
 
         this.object = object;
         this.path = path;
-        this.name = path.split('.').pop();
+        this.name = path ? path.split('.').pop() : path;
         this.ease = ease;
         this.target = target;
         this.duration = duration;
-        this.value = dot(object, path)
+        this.value = (typeof object === 'object') ? dot(object, path) : object
 
     }
 
     set(value: number) {
-        dot(this.object, this.path, value)
+
+        this.value = value
+
+        if (typeof this.object === 'object')
+            dot(this.object, this.path, this.value)
+
     }
 
     interpolate(elapsed: number): boolean {

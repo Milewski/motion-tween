@@ -86,3 +86,9 @@ export const stripe = <A>(type: string, object: A): A => {
     return object
 
 }
+
+export const keyBy = function (array: any[], key: string) {
+    const object = {}
+    array.forEach(item => object[item[key]] = item)
+    return object
+};

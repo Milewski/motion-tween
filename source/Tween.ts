@@ -1,5 +1,5 @@
 import { TweenProperty } from "./TweenProperty";
-import { dot, extend, flat } from "./Helpers";
+import { dot, extend, flat, keyBy } from "./Helpers";
 import { Ease } from "./Ease";
 import { TweenInterface } from "./Interfaces/TweenInterface";
 import { Events } from "./Events";
@@ -14,28 +14,60 @@ export class Tween {
     public properties: TweenProperty[] = [];
     public defaults = {
         ease: Ease.LINEAR,
-        duration: 1
+        duration: 1,
+        ignore: []
     }
 
     constructor(options: TweenInterface) {
 
-        const { target, origin, ease, duration, queue, ...callbacks } = extend({}, this.defaults, options);
+        let { target, origin, ignore, ease, duration, queue, ...callbacks } = extend({}, this.defaults, options);
 
         this.events = new Events(callbacks);
 
         const constTarget = typeof target === 'number';
         const eases = new Ease;
 
-        for (const { path, value } of flat(constTarget ? origin : target)) {
+        /**
+         * Flat out ignore object
+         */
+        if (typeof ignore === 'object') {
+            ignore = flat(ignore).filter(({ value }) => value).map(({ path }) => path)
+        }
+
+        if (typeof origin === 'number') {
 
             const property = new TweenProperty(origin, {
-                ease: eases[ease].bind(eases),
-                path: path,
-                duration: (typeof duration === 'object') ? dot(duration, path) : duration,
-                target: constTarget ? target : value
+                ease: eases[ease].bind(eases), path: null, duration, target
             });
 
             this.properties.push(property)
+
+        } else {
+
+            for (const { path, value } of flat(constTarget ? origin : target)) {
+
+                if (ignore.filter(key => key === path).length) {
+                    continue
+                }
+
+                let easeFuncName = (typeof eases === 'object') ? dot(ease, path) : eases[ease]
+
+                try {
+
+                    const property = new TweenProperty(origin, {
+                        ease: (easeFuncName ? eases[easeFuncName] : eases[this.defaults.ease]).bind(eases),
+                        path: path,
+                        duration: (typeof duration === 'object') ? dot(duration, path) : duration,
+                        target: constTarget ? target : value
+                    });
+
+                    this.properties.push(property)
+
+                } catch (error) {
+                    throw new Error(`invalid easing function: { ${easeFuncName} }`)
+                }
+
+            }
 
         }
 
@@ -45,22 +77,14 @@ export class Tween {
 
     }
 
-    public then(options: () => void | TweenInterface) {
+    public then(options: TweenInterface | Function) {
 
         if (typeof options === 'object') {
             this.queue.push(options)
             return this
         }
 
-        // /**
-        //  * If there is some items in the queue attach it to the last one
-        //  */
-        // console.log(this.queue)
-        // if (this.queue.length) {
-        //     return this.queue[this.queue.length - 1].promise.then(options)
-        // }
-
-        return this.promise.then(options)
+        return this.promise.then(options as () => void)
 
     }
 
@@ -74,15 +98,19 @@ export class Tween {
                 this.events.start()
             }
 
-        } else {
+        }
 
-            if (this.events.update) {
-                this.events.update()
-            }
+        const result = this.properties.filter(property => !property.interpolate(elapsed));
+
+        if (this.events.update) {
+
+            if (this.properties.length > 1) {
+                this.events.update(keyBy(this.properties, 'name'))
+            } else this.events.update(...this.properties)
 
         }
 
-        return this.properties.filter(property => !property.interpolate(elapsed)).length === 0;
+        return result.length === 0;
 
     }
 
@@ -96,9 +124,5 @@ export class Tween {
         return chain
 
     }
-
-    // public chain(...tweens: Tween[]) {
-    //     tweens.forEach(tween => this.queue.push(tween))
-    // }
 
 }
