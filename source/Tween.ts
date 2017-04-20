@@ -30,7 +30,7 @@ export class Tween {
         /**
          * Flat out ignore object
          */
-        if (typeof ignore === 'object') {
+        if (!Array.isArray(ignore)) {
             ignore = flat(ignore).filter(({ value }) => value).map(({ path }) => path)
         }
 
